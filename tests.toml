@@ -1,0 +1,10 @@
+test_format = 1.0
+
+[default]
+
+args.domain = "domain.tld"
+args.init_main_permission = "visitors"
+args.ai_api_key = ""
+args.enable_image_processing = true
+
+test_upgrade_from.0.7.0~ynh1.name = "Upgrade from first package"

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+source /usr/share/yunohost/helpers
+
+# Stop both writers so the SQLite database, WAL and uploads are captured
+# in one consistent application-level snapshot.
+ynh_systemctl --service="$app" --action="stop"
+ynh_systemctl --service="${app}-graphql" --action="stop"
+
+ynh_backup "$data_dir"
+ynh_backup "$install_dir/.env"
+ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_backup "/etc/systemd/system/$app.service"
+ynh_backup "/etc/systemd/system/${app}-graphql.service"
+
+ynh_systemctl --service="${app}-graphql" --action="start"
+ynh_systemctl --service="$app" --action="start"

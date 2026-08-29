@@ -1,0 +1,7 @@
+#!/bin/bash
+
+source /usr/share/yunohost/helpers
+
+# Pantry Host is intentionally packaged for the root of a dedicated domain.
+ynh_config_change_url_nginx
+ynh_systemctl --service="$app" --action="restart" --log_path="systemd"
