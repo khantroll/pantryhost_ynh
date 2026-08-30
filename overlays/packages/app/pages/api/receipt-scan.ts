@@ -30,12 +30,15 @@ type ReceiptResult = {
   items: ReceiptItem[];
 };
 
+const nullableString = { type: 'string', nullable: true };
+const nullableNumber = { type: 'number', nullable: true };
+
 const RESPONSE_SCHEMA = {
   type: 'object',
   properties: {
-    store: { type: ['string', 'null'] },
-    purchaseDate: { type: ['string', 'null'] },
-    currency: { type: ['string', 'null'] },
+    store: nullableString,
+    purchaseDate: nullableString,
+    currency: nullableString,
     items: {
       type: 'array',
       items: {
@@ -43,14 +46,14 @@ const RESPONSE_SCHEMA = {
         properties: {
           receiptText: { type: 'string' },
           name: { type: 'string' },
-          brand: { type: ['string', 'null'] },
-          quantity: { type: ['number', 'null'] },
-          itemSize: { type: ['number', 'null'] },
-          itemSizeUnit: { type: ['string', 'null'] },
-          category: { type: ['string', 'null'] },
+          brand: nullableString,
+          quantity: nullableNumber,
+          itemSize: nullableNumber,
+          itemSizeUnit: nullableString,
+          category: nullableString,
           confidence: { type: 'number' },
           excluded: { type: 'boolean' },
-          excludeReason: { type: ['string', 'null'] },
+          excludeReason: nullableString,
           needsReview: { type: 'boolean' },
         },
         required: [
