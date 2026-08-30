@@ -1,8 +1,5 @@
 #!/bin/bash
-
 source /usr/share/yunohost/helpers
-
-ynh_script_progression "Restoring Pantry Host data and configuration..."
 
 ynh_restore_file --origin_path="$data_dir"
 ynh_restore_file --origin_path="$install_dir/.env"
@@ -17,5 +14,3 @@ chmod 600 "$install_dir/.env"
 systemctl daemon-reload
 ynh_systemctl --service="${app}-graphql" --action="start" --log_path="systemd"
 ynh_systemctl --service="$app" --action="start" --log_path="systemd"
-
-ynh_script_progression "Restore of $app completed"

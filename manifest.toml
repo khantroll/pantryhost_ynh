@@ -5,7 +5,7 @@ packaging_format = 2
 id = "pantryhost"
 name = "Pantry Host"
 description.en = "Self-hosted pantry, grocery list, recipe and kitchen manager"
-version = "0.7.0~ynh1"
+version = "0.7.0~ynh2"
 
 maintainers = []
 
@@ -22,7 +22,7 @@ multi_instance = false
 ldap = "not_relevant"
 sso = false
 disk = "1G"
-ram.build = "2G"
+ram.build = "1G"
 ram.runtime = "500M"
 
 [install]
@@ -34,10 +34,32 @@ type = "domain"
 type = "group"
 default = "visitors"
 
+[install.ai_provider]
+ask.en = "AI provider"
+help.en = "Choose the LLM backend used for optional AI recipe generation."
+type = "select"
+choices = ["none", "anthropic", "gemini", "mistral", "openai-compatible"]
+default = "gemini"
+
 [install.ai_api_key]
-ask.en = "Anthropic API key (optional)"
+ask.en = "AI API key"
 type = "password"
 optional = true
+visible = "ai_provider != 'none'"
+
+[install.ai_model]
+ask.en = "AI model (optional)"
+help.en = "Leave blank to use the provider adapter's default model."
+type = "string"
+optional = true
+visible = "ai_provider != 'none'"
+
+[install.ai_base_url]
+ask.en = "OpenAI-compatible API base URL"
+help.en = "Only required for OpenAI-compatible endpoints, such as a local or hosted compatible API."
+type = "url"
+optional = true
+visible = "ai_provider == 'openai-compatible'"
 
 [install.enable_image_processing]
 ask.en = "Generate optimized image variants?"
@@ -56,13 +78,11 @@ default = true
 main.url = "/"
 
 [resources.ports]
-# Rex frontend; nginx is the only public entrypoint.
 main.default = 3000
 
-# Pantry Host currently hardcodes localhost:4001 for SSR GraphQL requests.
-# Therefore this port must remain fixed until upstream makes the SSR port configurable.
-graphql.default = 4001
-graphql.fixed = true
+[resources.ports.graphql]
+default = 4001
+fixed = true
 
 [resources.nodejs]
 version = "22"

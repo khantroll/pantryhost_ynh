@@ -1,19 +1,12 @@
-# Pantry Host for YunoHost
+# Pantry Host for YunoHost — multi-AI GUI revision
 
-Experimental YunoHost packaging for Pantry Host 0.7.0.
+This revision adds YunoHost GUI configuration for AI provider, key, model,
+and OpenAI-compatible base URL both during installation and after installation.
 
-## Install
+The YunoHost GUI layer is ready for Anthropic, Gemini, Mistral, and
+OpenAI-compatible providers.
 
-Host this directory in a Git repository, then install it with:
-
-```bash
-sudo yunohost app install https://github.com/YOURUSER/pantryhost_ynh --debug
-```
-
-Use a dedicated domain, for example `pantry.example.org`.
-
-## Current status
-
-This package is intended for testing on YunoHost 12.1+.
-It follows upstream `main` until Pantry Host publishes a stable tag/archive
-that can be checksum-pinned in the YunoHost manifest.
+**Application-side note:** the upstream Pantry Host source currently documents
+Anthropic as the implemented AI backend. The additional choices become
+functional when the application source is switched to a fork containing the
+Gemini/Mistral/OpenAI-compatible provider adapters.

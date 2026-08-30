@@ -1,0 +1,46 @@
+version = "1.0"
+
+[main]
+name.en = "Pantry Host configuration"
+services = ["__APP__", "__APP__-graphql"]
+
+    [main.ai]
+    name.en = "AI recipe generation"
+    help.en = "Configure the LLM backend used by Pantry Host's optional AI recipe generation feature."
+
+        [main.ai.ai_provider]
+        ask.en = "AI provider"
+        type = "select"
+        choices = ["none", "anthropic", "gemini", "mistral", "openai-compatible"]
+        bind = "AI_PROVIDER:__INSTALL_DIR__/.env"
+
+        [main.ai.ai_api_key]
+        ask.en = "API key"
+        type = "password"
+        optional = true
+        visible = "ai_provider != 'none'"
+        bind = "AI_API_KEY:__INSTALL_DIR__/.env"
+
+        [main.ai.ai_model]
+        ask.en = "Model"
+        help.en = "Blank uses the provider adapter's default."
+        type = "string"
+        optional = true
+        visible = "ai_provider != 'none'"
+        bind = "AI_MODEL:__INSTALL_DIR__/.env"
+
+        [main.ai.ai_base_url]
+        ask.en = "API base URL"
+        help.en = "Used only by the OpenAI-compatible provider."
+        type = "url"
+        optional = true
+        visible = "ai_provider == 'openai-compatible'"
+        bind = "AI_BASE_URL:__INSTALL_DIR__/.env"
+
+    [main.media]
+    name.en = "Media"
+
+        [main.media.enable_image_processing]
+        ask.en = "Generate optimized image variants"
+        type = "boolean"
+        bind = "ENABLE_IMAGE_PROCESSING:__INSTALL_DIR__/.env"

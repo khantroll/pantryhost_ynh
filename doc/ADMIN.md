@@ -1,19 +1,17 @@
-## Important packaging notes
+## AI configuration
 
-Pantry Host should be installed on a dedicated domain such as
-`pantry.example.org`, at `/`.
+The YunoHost install form and post-install configuration panel expose:
 
-The GraphQL service uses fixed local port 4001 because Pantry Host 0.7.0
-hardcodes `localhost:4001` for server-side rendering. The port is not
-opened in the firewall; nginx exposes GraphQL as `/graphql` over the
-normal YunoHost HTTPS endpoint.
+- provider: none, Anthropic, Gemini, Mistral, or OpenAI-compatible
+- API key
+- model
+- OpenAI-compatible base URL
 
-The package currently tracks Pantry Host's upstream `main` branch because
-upstream does not provide a stable tagged source archive for 0.7.0. Before
-submitting this package to the YunoHost catalog, switch to a checksum-pinned
-`resources.sources.main` archive.
+The values are stored in the app's `.env`. Saving the YunoHost configuration
+panel reloads/restarts both Pantry Host services.
 
-Persistent data:
-- SQLite: `$data_dir/pantry.db`
-- uploads: `$data_dir/uploads`
-- UI settings overrides: `$data_dir/settings-overrides.json`
+IMPORTANT: upstream Pantry Host currently documents Anthropic as its working
+AI backend. Gemini, Mistral, and OpenAI-compatible require the corresponding
+provider adapters in the Pantry Host application source. The YunoHost package
+is GUI-ready for those adapters but does not fake support that upstream does
+not yet implement.

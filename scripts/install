@@ -1,13 +1,8 @@
 #!/bin/bash
-
 source /usr/share/yunohost/helpers
 source ./_common.sh
 
 ynh_script_progression "Downloading Pantry Host..."
-
-# Upstream currently has no stable release archive/tag suitable for a
-# checksum-pinned YunoHost source resource, so this package follows main.
-# For a catalog submission, replace this with resources.sources + sha256.
 rm -rf "$install_dir"/*
 git clone --depth 1 --branch "$upstream_branch" "$upstream_repo" "$install_dir"
 rm -rf "$install_dir/.git"
@@ -29,15 +24,8 @@ ynh_config_add_systemd --service="${app}-graphql" --template="graphql.systemd.se
 ynh_config_add_systemd
 ynh_config_add_nginx
 
-yunohost service add "${app}-graphql" \
-    --description="Pantry Host GraphQL API" \
-    --log="systemd"
-yunohost service add "$app" \
-    --description="Pantry Host web application" \
-    --log="systemd"
+yunohost service add "${app}-graphql" --description="Pantry Host GraphQL API" --log="systemd"
+yunohost service add "$app" --description="Pantry Host web application" --log="systemd"
 
-ynh_script_progression "Starting Pantry Host..."
 ynh_systemctl --service="${app}-graphql" --action="start" --log_path="systemd"
 ynh_systemctl --service="$app" --action="start" --log_path="systemd"
-
-ynh_script_progression "Installation of $app completed"

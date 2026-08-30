@@ -1,17 +1,10 @@
 #!/bin/bash
-
 source /usr/share/yunohost/helpers
-
-ynh_script_progression "Removing system configurations..."
 
 ynh_systemctl --service="$app" --action="stop" || true
 ynh_systemctl --service="${app}-graphql" --action="stop" || true
-
 yunohost service remove "$app" || true
 yunohost service remove "${app}-graphql" || true
-
 ynh_config_remove_nginx
 ynh_config_remove_systemd
 ynh_config_remove_systemd "${app}-graphql"
-
-ynh_script_progression "Removal of $app completed"
