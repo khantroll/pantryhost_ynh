@@ -75,14 +75,14 @@ default = true
 # Do not install ynh3 until that workflow has completed successfully.
 [resources.sources.rex_builder]
 url = "https://github.com/khantroll/pantryhost_ynh/releases/download/rex-0.20.2-bookworm1/rex-builder-0.20.2-linux-x64-bookworm"
-sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+sha256 = "7bcff3f323a8a9ad09896e0da8e7350868f33a8ff10fd45b8df4059fe3ffad26"
 in_subdir = false
 extract = false
 rename = "rex-builder"
 
 [resources.sources.rex_runtime]
 url = "https://github.com/khantroll/pantryhost_ynh/releases/download/rex-0.20.2-bookworm1/rex-runtime-0.20.2-linux-x64-bookworm"
-sha256 = "1111111111111111111111111111111111111111111111111111111111111111"
+sha256 = "5af038690f01aba3d507ee9681957fdada6f78a6ed5a26d521db8b64612a7175"
 in_subdir = false
 extract = false
 rename = "rex-runtime"
