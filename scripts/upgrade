@@ -18,6 +18,12 @@ find "$install_dir" -mindepth 1 -maxdepth 1 \
 
 cp -a "$tmp_source"/. "$install_dir"/
 rm -rf "$tmp_source"
+
+# Apply development feature overlays after refreshing upstream source.
+if [ -d "../overlays" ]; then
+    cp -a ../overlays/. "$install_dir/"
+fi
+
 chown -R "$app:$app" "$install_dir"
 
 setup_persistent_paths
