@@ -39,6 +39,11 @@ install_dependencies_and_build() {
     pushd "$install_dir"
     ynh_exec_as_app npm ci
 
+    # Upstream Pantry Host explicitly installs Sharp for the target Linux
+    # architecture after npm ci because its native optional dependency can be
+    # skipped. Without it, graphql-server.ts crashes at startup.
+    ynh_exec_as_app npm install --os=linux --cpu=x64 sharp
+
     # Do NOT use node_modules/@limlabs/rex-linux-x64/bin/rex here.
     # The npm binary currently requires glibc 2.39. Our replacement is built
     # from exactly Rex 0.20.2 using Rex upstream's own Bookworm Dockerfile.
