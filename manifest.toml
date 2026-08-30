@@ -5,7 +5,7 @@ packaging_format = 2
 id = "pantryhost"
 name = "Pantry Host"
 description.en = "Self-hosted pantry, grocery list, recipe and kitchen manager"
-version = "0.7.0~ynh2"
+version = "0.7.0~ynh3"
 
 maintainers = []
 
@@ -17,7 +17,7 @@ code = "https://github.com/jpdevries/pantry-host"
 [integration]
 yunohost = ">= 12.1.40"
 helpers_version = "2.1"
-architectures = ["amd64", "arm64"]
+architectures = ["amd64"]
 multi_instance = false
 ldap = "not_relevant"
 sso = false
@@ -56,7 +56,7 @@ visible = "ai_provider != 'none'"
 
 [install.ai_base_url]
 ask.en = "OpenAI-compatible API base URL"
-help.en = "Only required for OpenAI-compatible endpoints, such as a local or hosted compatible API."
+help.en = "Only required for OpenAI-compatible endpoints."
 type = "url"
 optional = true
 visible = "ai_provider == 'openai-compatible'"
@@ -67,6 +67,25 @@ type = "boolean"
 default = true
 
 [resources]
+
+[resources.sources]
+
+# These two SHA256 values are automatically replaced by
+# .github/workflows/build-rex-bookworm.yml after the Rex release assets are built.
+# Do not install ynh3 until that workflow has completed successfully.
+[resources.sources.rex_builder]
+url = "https://github.com/khantroll/pantryhost_ynh/releases/download/rex-0.20.2-bookworm1/rex-builder-0.20.2-linux-x64-bookworm"
+sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+in_subdir = false
+extract = false
+rename = "rex-builder"
+
+[resources.sources.rex_runtime]
+url = "https://github.com/khantroll/pantryhost_ynh/releases/download/rex-0.20.2-bookworm1/rex-runtime-0.20.2-linux-x64-bookworm"
+sha256 = "1111111111111111111111111111111111111111111111111111111111111111"
+in_subdir = false
+extract = false
+rename = "rex-runtime"
 
 [resources.system_user]
 

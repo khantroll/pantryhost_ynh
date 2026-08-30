@@ -11,6 +11,9 @@ chown -R "$app:$app" "$install_dir"
 ynh_script_progression "Preparing persistent data..."
 setup_persistent_paths
 
+ynh_script_progression "Installing Debian 12 compatible Rex..."
+setup_bookworm_rex
+
 ynh_script_progression "Creating Pantry Host environment..."
 ynh_config_add --template=".env" --destination="$install_dir/.env"
 chmod 600 "$install_dir/.env"

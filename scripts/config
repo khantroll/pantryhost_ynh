@@ -1,0 +1,13 @@
+#!/bin/bash
+source /usr/share/yunohost/helpers
+ynh_abort_if_errors
+
+# Apply file bindings first, then restart both processes so changed environment
+# variables are loaded immediately.
+ynh_app_config_apply() {
+    _ynh_app_config_apply
+    ynh_systemctl --service="${app}-graphql" --action="restart" --log_path="systemd"
+    ynh_systemctl --service="$app" --action="restart" --log_path="systemd"
+}
+
+ynh_app_config_run "$1"

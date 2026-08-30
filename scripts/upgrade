@@ -10,14 +10,20 @@ git clone --depth 1 --branch "$upstream_branch" "$upstream_repo" "$tmp_source"
 rm -rf "$tmp_source/.git"
 
 rm -rf "$install_dir/node_modules"
-find "$install_dir" -mindepth 1 -maxdepth 1 ! -name ".env" -exec rm -rf {} +
+find "$install_dir" -mindepth 1 -maxdepth 1 \
+    ! -name ".env" \
+    ! -name "bin" \
+    ! -name ".ynh-rex" \
+    -exec rm -rf {} +
+
 cp -a "$tmp_source"/. "$install_dir"/
 rm -rf "$tmp_source"
 chown -R "$app:$app" "$install_dir"
 
 setup_persistent_paths
+rm -rf "$install_dir/.ynh-rex"
+setup_bookworm_rex
 
-# Preserve the existing .env on upgrade so GUI-configured provider/key/model survive.
 install_dependencies_and_build
 
 ynh_config_add_systemd --service="${app}-graphql" --template="graphql.systemd.service"

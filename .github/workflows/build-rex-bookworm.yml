@@ -1,0 +1,130 @@
+name: Build Rex 0.20.2 for Debian 12
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  REX_VERSION: "0.20.2"
+  RELEASE_TAG: "rex-0.20.2-bookworm1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out packaging repository
+        uses: actions/checkout@v4
+
+      - name: Check out Rex 0.20.2
+        uses: actions/checkout@v4
+        with:
+          repository: limlabs/rex
+          ref: v0.20.2
+          path: rex-upstream
+
+      - name: Build upstream Rex Bookworm images
+        run: |
+          set -euxo pipefail
+          mkdir -p out
+
+          # Upstream Rex's Dockerfile uses rust:1.93-bookworm and explicitly
+          # builds a build-capable binary plus a runtime-only binary.
+          docker build \
+            --target app-build \
+            -t rex-0202-builder \
+            rex-upstream
+
+          docker build \
+            -t rex-0202-runtime \
+            rex-upstream
+
+          builder_cid="$(docker create rex-0202-builder)"
+          runtime_cid="$(docker create rex-0202-runtime)"
+
+          docker cp \
+            "${builder_cid}:/usr/local/bin/rex" \
+            "out/rex-builder-${REX_VERSION}-linux-x64-bookworm"
+
+          docker cp \
+            "${runtime_cid}:/usr/local/bin/rex" \
+            "out/rex-runtime-${REX_VERSION}-linux-x64-bookworm"
+
+          docker rm "$builder_cid" "$runtime_cid"
+
+          chmod +x out/rex-*
+          sha256sum out/rex-* > out/SHA256SUMS
+
+      - name: Verify both binaries on Debian 12
+        run: |
+          set -euxo pipefail
+          docker run --rm \
+            -v "$PWD/out:/out:ro" \
+            debian:12-slim \
+            sh -c '
+              /out/rex-builder-0.20.2-linux-x64-bookworm --version
+              /out/rex-runtime-0.20.2-linux-x64-bookworm --version
+              ldd /out/rex-builder-0.20.2-linux-x64-bookworm
+              ldd /out/rex-runtime-0.20.2-linux-x64-bookworm
+            '
+
+      - name: Create or replace GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euxo pipefail
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" out/* --clobber
+          else
+            gh release create "$RELEASE_TAG" \
+              out/* \
+              --title "Rex ${REX_VERSION} — Debian 12 compatibility binaries" \
+              --notes "Rex ${REX_VERSION} built from upstream source using the upstream Bookworm Dockerfile for Pantry Host on YunoHost/Debian 12."
+          fi
+
+      - name: Patch YunoHost manifest with verified SHA256 values
+        run: |
+          set -euxo pipefail
+
+          builder_sha="$(sha256sum "out/rex-builder-${REX_VERSION}-linux-x64-bookworm" | awk '{print $1}')"
+          runtime_sha="$(sha256sum "out/rex-runtime-${REX_VERSION}-linux-x64-bookworm" | awk '{print $1}')"
+
+          python3 - "$builder_sha" "$runtime_sha" <<'PY'
+          import pathlib
+          import re
+          import sys
+
+          builder_sha, runtime_sha = sys.argv[1], sys.argv[2]
+          path = pathlib.Path("manifest.toml")
+          text = path.read_text()
+
+          text = re.sub(
+              r'(\[resources\.sources\.rex_builder\][\s\S]*?sha256 = ")[0-9a-f]{64}(")',
+              rf'\g<1>{builder_sha}\2',
+              text,
+              count=1,
+          )
+          text = re.sub(
+              r'(\[resources\.sources\.rex_runtime\][\s\S]*?sha256 = ")[0-9a-f]{64}(")',
+              rf'\g<1>{runtime_sha}\2',
+              text,
+              count=1,
+          )
+          path.write_text(text)
+          PY
+
+      - name: Commit finalized manifest
+        run: |
+          set -euxo pipefail
+          if git diff --quiet -- manifest.toml; then
+            echo "Manifest checksums already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.toml
+          git commit -m "Pin Bookworm Rex 0.20.2 binaries"
+          git push

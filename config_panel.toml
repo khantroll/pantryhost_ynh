@@ -2,11 +2,9 @@ version = "1.0"
 
 [main]
 name.en = "Pantry Host configuration"
-services = ["__APP__", "__APP__-graphql"]
 
     [main.ai]
     name.en = "AI recipe generation"
-    help.en = "Configure the LLM backend used by Pantry Host's optional AI recipe generation feature."
 
         [main.ai.ai_provider]
         ask.en = "AI provider"
