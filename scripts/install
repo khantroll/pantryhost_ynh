@@ -6,6 +6,13 @@ ynh_script_progression "Downloading Pantry Host..."
 rm -rf "$install_dir"/*
 git clone --depth 1 --branch "$upstream_branch" "$upstream_repo" "$install_dir"
 rm -rf "$install_dir/.git"
+
+# Development overlays let us prototype Pantry Host features without carrying
+# a full application fork yet. Files under overlays/ mirror the upstream tree.
+if [ -d "../overlays" ]; then
+    cp -a ../overlays/. "$install_dir/"
+fi
+
 chown -R "$app:$app" "$install_dir"
 
 ynh_script_progression "Preparing persistent data..."
