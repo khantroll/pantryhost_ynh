@@ -5,7 +5,7 @@ packaging_format = 2
 id = "pantryhost"
 name = "Pantry Host"
 description.en = "Self-hosted pantry, grocery list, recipe and kitchen manager"
-version = "0.7.0~ynh4"
+version = "0.7.0~ynh5"
 
 maintainers = []
 
